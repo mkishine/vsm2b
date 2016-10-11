@@ -1,7 +1,21 @@
 /* tslint:disable:no-unused-variable */
 
-import { TestBed, async } from '@angular/core/testing';
+import {
+  TestBed,
+  async,
+  tick,
+  fakeAsync
+} from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { GenStatDataService } from './gen-stat-data.service';
+
+class MockGenStatDataService {
+  static message:string = 'mocked gen stat data';
+
+  getRecords():Promise<string> {
+    return Promise.resolve(MockGenStatDataService.message);
+  }
+}
 
 describe('App: Vsm2a', () => {
   beforeEach(() => {
@@ -9,6 +23,9 @@ describe('App: Vsm2a', () => {
       declarations: [
         AppComponent
       ],
+      providers: [
+        {provide: GenStatDataService, useClass: MockGenStatDataService},
+      ]
     });
   });
 
@@ -29,5 +46,13 @@ describe('App: Vsm2a', () => {
     fixture.detectChanges();
     let compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('h1').textContent).toContain('app works!');
+  }));
+
+  it(`should have as title 'app works!'`, fakeAsync(() => {
+    let fixture = TestBed.createComponent(AppComponent);
+    let app = fixture.debugElement.componentInstance;
+    app.ngOnInit();
+    tick();
+    expect(app.title).toEqual(MockGenStatDataService.message);
   }));
 });
