@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GenStatDataService } from './gen-stat-data.service';
+import { GenStatRecord } from './gen-stat-record';
 
 @Component({
   selector: 'app-root',
@@ -13,8 +14,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.genStatDataService.getRecords().then((data) => {
-      this.title = data;
+    this.genStatDataService.getRecords().then((data:GenStatRecord[]) => {
+      this.title = data[0].client;
     });
   }
 }

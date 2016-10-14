@@ -8,12 +8,14 @@ import {
 } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { GenStatDataService } from './gen-stat-data.service';
+import { GenStatRecord } from './gen-stat-record';
 
 class MockGenStatDataService {
-  static message:string = 'mocked gen stat data';
+  static gsr = new GenStatRecord('DMO', 'VARServer', 'NLAF_RPT', 1472648422443, 'VOL_DIFF_LINK', 'HCS-ALL-E',
+    'navagarw', 'bendtsl001', 1, 12.0512475967407, 29148, 2004);
 
   getRecords():Promise<string> {
-    return Promise.resolve(MockGenStatDataService.message);
+    return Promise.resolve([MockGenStatDataService.gsr]);
   }
 }
 
@@ -48,11 +50,11 @@ describe('App: Vsm2a', () => {
     expect(compiled.querySelector('h1').textContent).toContain('app works!');
   }));
 
-  it(`should have as title 'app works!'`, fakeAsync(() => {
+  it(`should have as title = gsr.client`, fakeAsync(() => {
     let fixture = TestBed.createComponent(AppComponent);
     let app = fixture.debugElement.componentInstance;
     app.ngOnInit();
     tick();
-    expect(app.title).toEqual(MockGenStatDataService.message);
+    expect(app.title).toEqual(MockGenStatDataService.gsr.client);
   }));
 });

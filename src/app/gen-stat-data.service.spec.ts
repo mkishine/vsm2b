@@ -10,6 +10,7 @@ import {ResponseOptions} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 
 import { GenStatDataService } from './gen-stat-data.service';
+import { GenStatRecord } from './gen-stat-record';
 
 describe('Service: GenStatData', () => {
   let mockBackend:MockBackend;
@@ -51,15 +52,19 @@ describe('Service: GenStatData', () => {
           new ResponseOptions({
               status: 200,
               body: [
-                ['a']
+                ['client', 'app_server', 'report_type', 'asof_date', 'report', 'port', 'user', 'host', 'flags',
+                  'req_time', 'pid', 'req_no'],
+                ['DMO', 'VARServer', 'NLAF_RPT', 1472648422443, 'VOL_DIFF_LINK', 'HCS-ALL-E', 'navagarw', 'bendtsl001', '1',
+                  '12.0512475967407', '29148', '2004']
               ]
             }
           )));
       });
 
     let service:GenStatDataService = getTestBed().get(GenStatDataService);
-    service.getRecords().then((x) => {
-      expect(x).toBe('a');
+    service.getRecords().then((x:GenStatRecord[]) => {
+      expect(x.length).toBe(1);
+      expect(x[0].client).toBe('DMO');
       done();
     }, (error) => {
       // never get here
