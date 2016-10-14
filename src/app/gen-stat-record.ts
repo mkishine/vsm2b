@@ -68,7 +68,7 @@ export class GenStatRecord {
     return this._report;
   }
   get port(): string {
-    return this.port;
+    return this._port;
   }
   get user(): string {
     return this._user;
