@@ -6,9 +6,9 @@ import {
   tick,
   fakeAsync
 } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { GenStatDataService } from './gen-stat-data.service';
-import { GenStatRecord } from './gen-stat-record';
+import { AppComponent } from './app.component.ts';
+import { GenStatDataService } from './../utilities/gen-stat-data.service.ts';
+import { GenStatRecord } from './../model/gen-stat-record';
 
 class MockGenStatDataService {
   static gsr = new GenStatRecord('DMO', 'VARServer', 'NLAF_RPT', 1472648422443, 'VOL_DIFF_LINK', 'HCS-ALL-E',

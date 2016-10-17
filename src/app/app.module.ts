@@ -3,11 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
-import { AppComponent } from './app.component';
-import { DetailsComponent } from './details/details.component';
-import { SummaryComponent } from './summary/summary.component';
+import { AppComponent } from './main/app.component.ts';
+import { DetailsComponent } from './main/details/details.component';
+import { SummaryComponent } from './main/summary/summary.component';
 
-import { GenStatDataService } from './gen-stat-data.service';
+import { GenStatDataService } from './utilities/gen-stat-data.service.ts';
 
 import {
   OnChangesParentComponent,

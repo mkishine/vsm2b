@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { GenStatDataService } from './gen-stat-data.service';
-import { GenStatRecord } from './gen-stat-record';
+import { GenStatDataService } from './../utilities/gen-stat-data.service.ts';
+import { GenStatRecord } from './../model/gen-stat-record';
 import * as _ from "lodash";
 
 @Component({

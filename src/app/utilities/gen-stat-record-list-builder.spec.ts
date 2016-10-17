@@ -1,11 +1,11 @@
 import { GenStatRecordListBuilder } from './gen-stat-record-list-builder';
-import { GenStatRecord } from './gen-stat-record';
+import { GenStatRecord } from './../model/gen-stat-record';
 
 describe('GenStatRecordListBuilder.buildGenStatRecordList is a method', function () {
   let builder, rawData;
   beforeAll(function () {
     builder = new GenStatRecordListBuilder();
-    rawData = require('../gen_stat_dump.BEN.20160831T0900-20160831T1000.json');
+    rawData = require('../../gen_stat_dump.BEN.20160831T0900-20160831T1000.json');
   });
   describe('that starts with input input validation.', function () {
     describe('It makes sure that input', function () {

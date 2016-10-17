@@ -1,5 +1,5 @@
 import { Component, Input, EventEmitter, Output } from '@angular/core';
-import { GenStatRecord } from '../gen-stat-record';
+import { GenStatRecord } from '../../model/gen-stat-record';
 
 @Component({
   selector: 'app-details',

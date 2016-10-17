@@ -1,4 +1,4 @@
-import { GenStatRecord } from './gen-stat-record';
+import { GenStatRecord } from './../model/gen-stat-record';
 
 export class GenStatRecordListBuilder {
   buildGenStatRecordList(rawData:any):GenStatRecord[] {

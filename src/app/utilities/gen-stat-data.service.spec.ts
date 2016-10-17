@@ -9,8 +9,8 @@ import {
 import {ResponseOptions} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 
-import { GenStatDataService } from './gen-stat-data.service';
-import { GenStatRecord } from './gen-stat-record';
+import { GenStatDataService } from './gen-stat-data.service.ts';
+import { GenStatRecord } from './../model/gen-stat-record';
 
 describe('Service: GenStatData', () => {
   let mockBackend:MockBackend;
