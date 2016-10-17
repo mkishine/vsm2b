@@ -1,0 +1,9 @@
+td.num {
+  text-align: right;
+}
+
+label {
+  display: block;
+  width: 100px;
+  cursor: pointer;
+}

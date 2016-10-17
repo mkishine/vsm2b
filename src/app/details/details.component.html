@@ -1,0 +1,40 @@
+<div *ngIf="isValid">
+  <input #imin (keyup.enter)="setMin(imin.value)" (blur)="setMin(imin.value)" [value]="min" placeholder="min"/>
+  <input #imax (keyup.enter)="setMax(imax.value)" (blur)="setMax(imax.value)" [value]="max" placeholder="max"/>
+  <button [disabled]="zoomedOut" (click)="reset()">Reset Zoom</button>
+  Try min=1472650083066, and max=1472650365760
+  <table>
+    <thead>
+    <tr>
+      <th>client</th>
+      <th>appServer</th>
+      <th>reportType</th>
+      <th>asofDate</th>
+      <th>report</th>
+      <th>port</th>
+      <th>user</th>
+      <th>host</th>
+      <th>flags</th>
+      <th>reqTime</th>
+      <th>pid</th>
+      <th>reqNo</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let r of records.slice(0,10)" [class]="getClass(r)">
+      <td>{{r.client}}</td>
+      <td>{{r.appServer}}</td>
+      <td>{{r.reportType}}</td>
+      <td>{{r.asofDate|date:'mediumTime'}}</td>
+      <td>{{r.report}}</td>
+      <td>{{r.port}}</td>
+      <td>{{r.user}}</td>
+      <td>{{r.host}}</td>
+      <td>{{r.flags}}</td>
+      <td>{{r.reqTime}}</td>
+      <td>{{r.pid}}</td>
+      <td>{{r.reqNo}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

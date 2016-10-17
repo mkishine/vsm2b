@@ -1,0 +1,7 @@
+td {
+  padding-left: .5em;
+  padding-right: .5em;
+}
+tr.highlight {
+  background-color: lightgreen;
+}
