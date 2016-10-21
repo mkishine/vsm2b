@@ -28,19 +28,13 @@ export class SummaryComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.id = this.title + this.type;
     this.control = new FormControl();
-    this.control.registerOnChange(() => {
-      console.log(`registerOnChange: ${this.control.value}`);
-    });
     let controls = {};
     controls[this.id] = this.control;
     this.formGroup = new FormGroup(controls);
   }
 
-  private onChange() {
-    // TODO: figure out how to get radio button value without timeout
-    setTimeout(()=> {
-      this.onSummarySelected.emit([this.title, this.control.value]);
-    }, 0);
+  private onClick(newValue:string) {
+    this.onSummarySelected.emit([this.title, newValue]);
   }
 
   ngOnChanges(changes:SimpleChanges) {

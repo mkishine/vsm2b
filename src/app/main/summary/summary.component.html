@@ -9,7 +9,7 @@
     </thead>
     <tbody>
     <tr *ngFor="let r of data.slice(0,5)">
-      <td><input type="radio" [id]="id+r[0]" [value]="r[0]" [formControlName]="id" (change)="onChange()"></td>
+      <td><input type="radio" [id]="id+r[0]" [value]="r[0]" [formControlName]="id" (click)="onClick(r[0])"></td>
       <td><label [attr.for]="id+r[0]">{{r[0]}}</label></td>
       <td class="num"><label [attr.for]="id+r[0]">{{r[1]|number:'1.0-0'}}</label></td>
     </tr>
