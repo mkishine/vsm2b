@@ -3,15 +3,15 @@
     <thead>
     <tr>
       <th></th>
-      <th>{{title}}</th>
-      <th>{{type}}</th>
+      <th class="summary-title">{{title}}</th>
+      <th class="summary-type">{{type}}</th>
     </tr>
     </thead>
     <tbody>
     <tr *ngFor="let r of data.slice(0,5)">
-      <td><input type="radio" [id]="id+r[0]" [value]="r[0]" [formControlName]="id" (click)="onClick(r[0])"></td>
-      <td><label [attr.for]="id+r[0]">{{r[0]}}</label></td>
-      <td class="num"><label [attr.for]="id+r[0]">{{r[1]|number:'1.0-0'}}</label></td>
+      <td><input type="radio" [id]="idBase+r[0]" [value]="r[0]" [formControlName]="idBase" (click)="onClick(r[0])"></td>
+      <td><label [attr.for]="idBase+r[0]" class="summary-x">{{r[0]}}</label></td>
+      <td class="num"><label [attr.for]="idBase+r[0]">{{r[1]|number:'1.0-0'}}</label></td>
     </tr>
     </tbody>
   </table>
