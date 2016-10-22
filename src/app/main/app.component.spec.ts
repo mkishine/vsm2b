@@ -2,14 +2,15 @@
 
 import {
   TestBed,
+  ComponentFixture,
   async,
   tick,
   fakeAsync
 } from '@angular/core/testing';
+import { By }           from '@angular/platform-browser';
 import { AppComponent } from './app.component.ts';
 import { GenStatDataService } from './../utilities/gen-stat-data.service.ts';
 import { GenStatRecord } from './../model/gen-stat-record';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 class MockGenStatDataService {
   static gsr = new GenStatRecord('DMO', 'VARServer', 'NLAF_RPT', 1472648422443, 'VOL_DIFF_LINK', 'HCS-ALL-E',
@@ -21,28 +22,81 @@ class MockGenStatDataService {
 }
 
 describe('App: Vsm2a', () => {
-  beforeEach(() => {
+
+  let fixture:ComponentFixture<AppComponent>;
+  let comp:AppComponent;
+
+  // async beforeEach
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [AppComponent],
+      declarations: [AppComponent, MockDetailsComponent, MockSummaryComponent],
       providers: [
         {provide: GenStatDataService, useClass: MockGenStatDataService},
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    });
+      ]
+    })
+      .compileComponents(); // compile template and css
+  }));
+
+  // synchronous beforeEach
+  beforeEach(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    comp = fixture.componentInstance;
+    fixture.detectChanges(); // trigger initial data binding
   });
 
+
   it('should create the app', async(() => {
-    let fixture = TestBed.createComponent(AppComponent);
-    let app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+    expect(comp).toBeTruthy();
+
   }));
 
-  xit('should get data on init', fakeAsync(() => {
-    let fixture = TestBed.createComponent(AppComponent);
-    let app = fixture.debugElement.componentInstance;
-    app.ngOnInit();
-    tick();
-    //TODO: figure out how to test this
-    expect(1).toEqual(1);
+  it('should get data on init', fakeAsync(() => {
+    comp.ngOnInit();
+    tick(); // MockGenStatDataService to resolve
+    fixture.detectChanges(); // detectet and propogate the changes
+    const detailsDebugElement = fixture.debugElement.query(By.css('app-details'));
+    expect(detailsDebugElement.componentInstance.records[0]).toEqual(MockGenStatDataService.gsr);
   }));
 });
+
+////// Mock Children Components //////
+// TODO: remove OnInit, OnChanges, SimpleChanges if we do not need them
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+
+@Component({
+  selector: 'app-details',
+  template: 'details'
+})
+class MockDetailsComponent implements OnInit, OnChanges{
+  @Input() records:GenStatRecord[];
+  @Input() isSelected:(GenStatRecord)=>boolean;
+  @Output() onZoomChanged = new EventEmitter<[number,number]>();
+
+  constructor() {
+    // console.log('constructor');
+  }
+  ngOnInit() {
+    //console.log('ngOnInit');
+    //console.log(this.records);
+  }
+
+  ngOnChanges(changes:SimpleChanges) {
+    //console.log('ngOnChanges');
+    //console.log(changes);
+  }
+}
+
+
+@Component({
+  selector: 'app-summary',
+  template: 'summary'
+})
+class MockSummaryComponent {
+  @Input() title:string;
+  @Input() type:string;
+  @Input() data:[string, number][];
+  @Input() selectionTitle:string;
+  @Input() selectionValue:string;
+  @Output() onSummarySelected = new EventEmitter<[string, string]>();
+}
+
