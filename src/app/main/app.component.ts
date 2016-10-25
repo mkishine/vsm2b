@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GenStatDataService } from './../utilities/gen-stat-data.service.ts';
 import { GenStatRecord } from './../model/gen-stat-record';
-import * as _ from "lodash";
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-root',
@@ -28,20 +28,28 @@ export class AppComponent implements OnInit {
 
   private selectionTitle = '';
   private selectionValue = '';
-
-  private isSelected = function (GenStatRecord) {
-    return false
-  };
+  private isSelected = this.noSelection;
 
   constructor(private genStatDataService:GenStatDataService) {
   }
+
+  ngOnInit():void {
+    this.genStatDataService.getRecords().then((data:GenStatRecord[]) => {
+      this.records = this.originalRecords = data;
+      this.updateSummaries();
+    });
+  }
+
+  private noSelection(GenStatRecord) {
+    return false;
+  };
 
   private count(data:GenStatRecord[],
                 keyGen:(GenStatRecord)=>string,
                 accGen:(GenStatRecord)=>number):[string, number][] {
     return <[string, number][]>_(data.reduce(
       function (acc, r) {
-        var key = keyGen(r);
+        const key = keyGen(r);
         if (!acc[key]) {
           acc[key] = 0;
         }
@@ -70,13 +78,7 @@ export class AppComponent implements OnInit {
     this.userTimeSummary = this.count(this.records, gsr => gsr.user, gsr => gsr.reqTime);
   }
 
-  ngOnInit():void {
-    this.genStatDataService.getRecords().then((data:GenStatRecord[]) => {
-      this.records = this.originalRecords = data;
-      this.updateSummaries();
-    });
-  }
-
+  // tslint:disable:no-unused-variable
   private onZoomChanged(range:[number,number]) {
     let min = range[0], max = range[1];
     if (min === null && max === null) {
@@ -95,51 +97,49 @@ export class AppComponent implements OnInit {
     }
     this.updateSummaries();
   }
-
+  // tslint:disable:no-unused-variable
   private onSummarySelected(info:[string,string]) {
     const title = info[0];
     const value = info[1];
-    if (value == '') {
+    if (value === '') {
       return;
     }
-    if (this.selectionTitle == title && this.selectionValue == value) {
+    if (this.selectionTitle === title && this.selectionValue === value) {
       return;
     }
     switch (title) {
       case 'Client':
         this.isSelected = function (gsr:GenStatRecord) {
-          return gsr.client == value;
+          return gsr.client === value;
         };
         break;
       case 'AppServer':
         this.isSelected = function (gsr:GenStatRecord) {
-          return gsr.appServer == value;
+          return gsr.appServer === value;
         };
         break;
       case 'ReportType':
         this.isSelected = function (gsr:GenStatRecord) {
-          return gsr.reportType == value;
+          return gsr.reportType === value;
         };
         break;
       case 'Report':
         this.isSelected = function (gsr:GenStatRecord) {
-          return gsr.report == value;
+          return gsr.report === value;
         };
         break;
       case 'Portfolio':
         this.isSelected = function (gsr:GenStatRecord) {
-          return gsr.port == value;
+          return gsr.port === value;
         };
         break;
       case 'User':
         this.isSelected = function (gsr:GenStatRecord) {
-          return gsr.user == value;
+          return gsr.user === value;
         };
         break;
       default:
-        this.isSelected = function (gsr:GenStatRecord) {
-          return false;
-        };
+        this.isSelected = this.noSelection;
         break;
     }
     this.selectionTitle = title;
