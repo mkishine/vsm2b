@@ -39,13 +39,12 @@ describe('Service: GenStatData', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should exist (using getTestBed().get())', done => {
+  it('should exist (using getTestBed().get())', async(()=> {
     let service = getTestBed().get(GenStatDataService);
     expect(service).toBeDefined();
-    done();
-  });
+  }));
 
-  it('should return value', done => {
+  it('should return value', async(() => {
     mockBackend.connections.subscribe(
       (connection:MockConnection) => {
         connection.mockRespond(new Response(
@@ -65,15 +64,13 @@ describe('Service: GenStatData', () => {
     service.getRecords().then((x:GenStatRecord[]) => {
       expect(x.length).toBe(1);
       expect(x[0].client).toBe('DMO');
-      done();
     }, (error) => {
       // never get here
       expect(1).toBe(2);
-      done();
     });
-  });
+  }));
 
-  it('should handle error', done => {
+  it('should handle error', async(() => {
     mockBackend.connections.subscribe(
       (connection:MockConnection) => {
         connection.mockRespond(new Response(
@@ -87,11 +84,9 @@ describe('Service: GenStatData', () => {
     service.getRecords().then((success) => {
       // never get here
       expect(1).toBe(1);
-      done();
     }, (error) => {
       expect(error.status).toBe(404);
-      done();
     });
-  });
+  }));
 
 });
