@@ -14,23 +14,28 @@ import {
   OnChangesComponent
 } from './sandbox/on-changes.component';
 
+import { ChartModule } from 'angular2-highcharts';
+import { ChartsExample } from './sandbox/charts-example.component';
+
 let bootstrapComponent:any = AppComponent;
 let declarations:any[] = [AppComponent, DetailsComponent, SummaryComponent];
+let imports:any[] =  [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule];
+let providers:any[] = [GenStatDataService];
 if (/\bbootstrap=OnChangesParentComponent\b/.test(location.search)) {
-  bootstrapComponent = OnChangesParentComponent;
   declarations = [OnChangesParentComponent, OnChangesComponent];
+  imports = [BrowserModule, FormsModule, ReactiveFormsModule];
+  providers = [];
+  bootstrapComponent = OnChangesParentComponent;
+} else if (/\bbootstrap=ChartsExample\b/.test(location.search)) {
+  declarations = [ChartsExample];
+  imports = [BrowserModule, ChartModule];
+  providers = [];
+  bootstrapComponent = ChartsExample;
 }
 @NgModule({
   declarations: declarations,
-  imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpModule
-  ],
-  providers: [
-    GenStatDataService
-  ],
+  imports: imports,
+  providers: providers,
   bootstrap: [bootstrapComponent]
 })
 export class AppModule {
