@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './main/app.component.ts';
-import { DetailsComponent } from './main/details/details.component';
+import { DetailsChartComponent } from './main/details/details_chart.component';
 import { SummaryComponent } from './main/summary/summary.component';
 
 import { GenStatDataService } from './utilities/gen-stat-data.service.ts';
@@ -18,8 +18,8 @@ import { ChartModule } from 'angular2-highcharts';
 import { ChartsExample } from './sandbox/charts-example.component';
 
 let bootstrapComponent:any = AppComponent;
-let declarations:any[] = [AppComponent, DetailsComponent, SummaryComponent];
-let imports:any[] =  [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule];
+let declarations:any[] = [AppComponent, DetailsChartComponent, SummaryComponent];
+let imports:any[] =  [BrowserModule, FormsModule, ReactiveFormsModule, HttpModule, ChartModule];
 let providers:any[] = [GenStatDataService];
 if (/\bbootstrap=OnChangesParentComponent\b/.test(location.search)) {
   declarations = [OnChangesParentComponent, OnChangesComponent];
