@@ -1,7 +1,22 @@
-<app-details [records]="records" [isSelected]="isSelected" (onZoomChanged)="onZoomChanged($event)"></app-details>
+<details-chart [records]="originalRecords" [isSelected]="isSelected" (onZoomChanged)="onZoomChanged($event)"></details-chart>
 <h3>Request Count Summary</h3>
 <table>
   <tr>
+    <td>
+      <app-summary [data]="userCountSummary" [title]="'User'" [type]="'Count'"
+                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
+                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
+    </td>
+    <td>
+      <app-summary [data]="reportCountSummary" [title]="'Report'" [type]="'Count'"
+                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
+                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
+    </td>
+    <td>
+      <app-summary [data]="portCountSummary" [title]="'Portfolio'" [type]="'Count'"
+                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
+                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
+    </td>
     <td>
       <app-summary [data]="clientCountSummary" [title]="'Client'" [type]="'Count'"
                    [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
@@ -17,38 +32,13 @@
                    [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
                    (onSummarySelected)="onSummarySelected($event)"></app-summary>
     </td>
-    <td>
-      <app-summary [data]="reportCountSummary" [title]="'Report'" [type]="'Count'"
-                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
-                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
-    </td>
-    <td>
-      <app-summary [data]="portCountSummary" [title]="'Portfolio'" [type]="'Count'"
-                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
-                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
-    </td>
-    <td>
-      <app-summary [data]="userCountSummary" [title]="'User'" [type]="'Count'"
-                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
-                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
-    </td>
   </tr>
 </table>
 <h3>Request Time Summary</h3>
 <table>
   <tr>
     <td>
-      <app-summary [data]="clientTimeSummary" [title]="'Client'" [type]="'Time'"
-                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
-                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
-    </td>
-    <td>
-      <app-summary [data]="appServerTimeSummary" [title]="'AppServer'" [type]="'Time'"
-                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
-                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
-    </td>
-    <td>
-      <app-summary [data]="reportTypeTimeSummary" [title]="'ReportType'" [type]="'Time'"
+      <app-summary [data]="userTimeSummary" [title]="'User'" [type]="'Time'"
                    [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
                    (onSummarySelected)="onSummarySelected($event)"></app-summary>
     </td>
@@ -63,7 +53,17 @@
                    (onSummarySelected)="onSummarySelected($event)"></app-summary>
     </td>
     <td>
-      <app-summary [data]="userTimeSummary" [title]="'User'" [type]="'Time'"
+      <app-summary [data]="clientTimeSummary" [title]="'Client'" [type]="'Time'"
+                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
+                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
+    </td>
+    <td>
+      <app-summary [data]="appServerTimeSummary" [title]="'AppServer'" [type]="'Time'"
+                   [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
+                   (onSummarySelected)="onSummarySelected($event)"></app-summary>
+    </td>
+    <td>
+      <app-summary [data]="reportTypeTimeSummary" [title]="'ReportType'" [type]="'Time'"
                    [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
                    (onSummarySelected)="onSummarySelected($event)"></app-summary>
     </td>
