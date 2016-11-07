@@ -12,7 +12,7 @@ export class GenStatDataService {
   }
 
   getRecords():Promise<GenStatRecord[]> {
-    return this.http.get('/gen_stat_dump.BEN.20160831T0900-20160831T1000.json')
+    return this.http.get('/gen_stat_dump.BLK.20160831T0900-20160831T1000.json')
       .toPromise()
       .then((response) => {
         if (response.ok) {
