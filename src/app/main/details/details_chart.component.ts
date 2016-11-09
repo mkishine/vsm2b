@@ -16,6 +16,11 @@ class GSRPointRep {
   get x():number {
     return this.gsr.asofDate;
   }
+
+  get tooltip():string {
+    const g = this.gsr;
+    return `${g.user} ${g.report} ${g.port} ${g.reqTime.toFixed(2)} sec`;
+  }
 }
 
 @Component({
@@ -54,6 +59,9 @@ export class DetailsChartComponent implements OnChanges {
 
   private saveInstance(chartInstance) {
     this.chart = chartInstance;
+    // attach itself to the chart to use in data formatter
+    this.chart['details_chart'] = this;
+
   }
 
   private onAfterSetExtremesX(e) {
@@ -61,12 +69,13 @@ export class DetailsChartComponent implements OnChanges {
     const max:number = e.context.max >= this.maxAsofDate ? null : e.context.max;
     this.onZoomChanged.emit([min, max]);
   }
+
   private setSeries() {
     this.updateData();
     this.chart.addSeries({
       name: 'allData',
       data: this.data,
-      visible: false
+      visible: false,
     }, false);
     this.chart.addSeries({
       name: 'sFast',
@@ -91,18 +100,60 @@ export class DetailsChartComponent implements OnChanges {
     }, false);
     this.chart.redraw();
   }
+
   ngOnChanges(changes:SimpleChanges) {
-    if( 'records' in changes ) {
-      if ( _.get(changes, 'records.currentValue.length') > 0 ) {
+    if ('records' in changes) {
+      if (_.get(changes, 'records.currentValue.length') > 0) {
         this.setSeries();
       }
     }
-    if ( 'isSelected' in changes ) {
-      if ( this.data.length !== 0 ) {
+    if ('isSelected' in changes) {
+      if (this.data.length !== 0) {
         this.focus();
       }
     }
   }
+
+  private formatDataGroupPoint(begin:number, end:number):string {
+    let s = '';
+    const slice = this.data.slice(begin, end).sort((a, b) => {
+      return b.gsr.reqTime - a.gsr.reqTime;
+    });
+    const cutoff = 3;
+    slice.slice(0, cutoff).forEach((p)=> {
+      s += `${p.tooltip}<br>`;
+    });
+    if (slice.length > cutoff) {
+      const count = slice.length - cutoff;
+      const time = slice.slice(cutoff).reduce((a, b) => {
+        return a + b.gsr.reqTime;
+      }, 0).toFixed(2);
+      s += `${count} more requests, total time ${time} sec<br>`;
+    }
+    return s;
+  }
+
+  private tooltipOptions() {
+    return {
+      valueDecimals: 2,
+      pointFormatter: function () {
+        let s:string;
+        if (this.dataGroup) {
+          const begin = this.dataGroup.start;
+          const end = begin + this.dataGroup.length;
+          const comp:DetailsChartComponent = <DetailsChartComponent>this.series.chart['details_chart'];
+          s = comp.formatDataGroupPoint(begin, end);
+        } else if (this.gsr) {
+          const p = <GSRPointRep>this.options;
+          s = `${p.tooltip}`;
+        } else {
+          s = '????';
+        }
+        return s;
+      }
+    };
+  }
+
   private getChartOptions() {
     return {
       navigator: {
@@ -141,28 +192,7 @@ export class DetailsChartComponent implements OnChanges {
             approximation: 'high',
             enabled: true
           },
-          tooltip: {
-            valueDecimals: 2,
-            pointFormatter: function () {
-              let s:string;
-              if (this.dataGroup) {
-                //const begin = this.dataGroup.start;
-                //const end = begin + this.dataGroup.length;
-                //s = '';
-                //// this.data is not right (here this points to highcharts point object)
-                //// TODO: find out how to access original data
-                //this.data.slice(begin, end).forEach((p)=> {
-                //  s += `${p.gsr.user} ${p.y}<br>`;
-                //});
-              } else if (this.gsr) {
-                const gsr = <GenStatRecord>this.gsr;
-                s = `${gsr.user} ${this.y}`;
-              } else {
-                s = '????';
-              }
-              return s;
-            }
-          },
+          tooltip: this.tooltipOptions(),
           states: {
             hover: {
               lineWidthPlus: 0
@@ -189,10 +219,7 @@ export class DetailsChartComponent implements OnChanges {
   }
 
   private medium(p:GSRPointRep):boolean {
-    // I am getting exceptions on calling fast
-    // TODO: figure out how to call fast and slow
-    // return !this.fast(p) && !this.slow(p);
-    return p.gsr.reqTime >= 1.0 && p.gsr.reqTime <= 60.0;
+    return !this.fast(p) && !this.slow(p);
   }
 
   private updateData():void {
@@ -219,9 +246,9 @@ export class DetailsChartComponent implements OnChanges {
     });
     this.minAsofDate = this.data[0].gsr.asofDate;
     this.maxAsofDate = this.data[this.data.length - 1].gsr.asofDate;
-    this.dataFast = this.data.filter(this.fast);
-    this.dataMed = this.data.filter(this.medium);
-    this.dataSlow = this.data.filter(this.slow);
+    this.dataFast = this.data.filter(this.fast, this);
+    this.dataMed = this.data.filter(this.medium, this);
+    this.dataSlow = this.data.filter(this.slow, this);
   }
 
   private clear() {
@@ -236,12 +263,24 @@ export class DetailsChartComponent implements OnChanges {
 
   private focus() {
     this.clear();
-    this.data1Fast = this.data.filter(p => this.isSelected(p.gsr)&&this.fast(p));
-    this.data2Fast = this.data.filter(p => (!this.isSelected(p.gsr))&&this.fast(p));
-    this.data1Med = this.data.filter(p => this.isSelected(p.gsr)&&this.medium(p));
-    this.data2Med = this.data.filter(p => (!this.isSelected(p.gsr))&&this.medium(p));
-    this.data1Slow = this.data.filter(p => this.isSelected(p.gsr)&&this.slow(p));
-    this.data2Slow = this.data.filter(p => (!this.isSelected(p.gsr))&&this.slow(p));
+    this.data1Fast = this.data.filter(p => {
+      return this.isSelected(p.gsr) && this.fast(p);
+    }, this);
+    this.data2Fast = this.data.filter(p => {
+      return (!this.isSelected(p.gsr)) && this.fast(p);
+    }, this);
+    this.data1Med = this.data.filter(p => {
+      return this.isSelected(p.gsr) && this.medium(p);
+    }, this);
+    this.data2Med = this.data.filter(p => {
+      return (!this.isSelected(p.gsr)) && this.medium(p);
+    }, this);
+    this.data1Slow = this.data.filter(p => {
+      return this.isSelected(p.gsr) && this.slow(p);
+    }, this);
+    this.data2Slow = this.data.filter(p => {
+      return (!this.isSelected(p.gsr)) && this.slow(p);
+    }, this);
     this.chart.addSeries({
       name: 's1fast',
       data: this.data1Fast,
