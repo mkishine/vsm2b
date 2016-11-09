@@ -36,6 +36,7 @@ export class ChartsExample {
       },
       plotOptions: {
         series: {
+          animation: false,
           dataLabels: {
             enabled: true,
             align: 'left',
