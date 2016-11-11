@@ -15,7 +15,7 @@ import {
 } from './sandbox/on-changes.component';
 
 import { ChartModule } from 'angular2-highcharts';
-import { ChartsExample } from './sandbox/charts-example.component';
+import { ChartsExample, SummaryChartComponent } from './sandbox/charts-example.component';
 
 let bootstrapComponent:any = AppComponent;
 let declarations:any[] = [AppComponent, DetailsChartComponent, SummaryComponent];
@@ -27,7 +27,7 @@ if (/\bbootstrap=OnChangesParentComponent\b/.test(location.search)) {
   providers = [];
   bootstrapComponent = OnChangesParentComponent;
 } else if (/\bbootstrap=ChartsExample\b/.test(location.search)) {
-  declarations = [ChartsExample];
+  declarations = [ChartsExample, SummaryChartComponent];
   imports = [BrowserModule, ChartModule];
   providers = [];
   bootstrapComponent = ChartsExample;
