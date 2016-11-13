@@ -1,15 +1,22 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { Highcharts } from 'angular2-highcharts';
+import {Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter} from '@angular/core';
+import {ChartObject, PointObject} from 'highcharts';
+
 
 @Component({
   selector: 'app-root',
   template: `
-        <summary-chart [data]="data">
+        Selection: {{selection}}<br>
+        <button (click)="selectionTitle='Report'; selectionValue='NF_CA_PFC';">Report NF_CA_PFC</button>
+        <button (click)="selectionTitle='Report'; selectionValue='xyz';">Report xyz</button>
+        <button (click)="selectionTitle='User'; selectionValue='abc';">User abc</button>
+        <summary-chart [data]="data" [title]="'Report'" [type]="'Time'"
+          [selectionTitle]="selectionTitle" [selectionValue]="selectionValue"
+          (onSummarySelected)="onSummarySelected($event)">
         </summary-chart>
     `
 })
 export class ChartsExample {
-  private data:[string, number][] = [
+  private data: [string, number][] = [
     ["NF_CA_PFC", 7169.4515073001385],
     ["TE_MKTDECOMP3", 5714.61398764141],
     ["praada_ts_fctr_", 4276.555221661924],
@@ -113,6 +120,15 @@ export class ChartsExample {
     ["pfc_var_factor_", 0.0943600013852119],
     ["MAP_lookup_long", 0.0788339972496033]
   ];
+  private selection = 'None';
+  private selectionTitle = '';
+  private selectionValue = '';
+
+  private onSummarySelected(info: [string,string]) {
+    this.selection = `${info[0]} ${info[1]}`;
+    this.selectionTitle = info[0];
+    this.selectionValue = info[1];
+  }
 }
 
 @Component({
@@ -126,7 +142,12 @@ export class ChartsExample {
     `
 })
 export class SummaryChartComponent implements OnInit, OnChanges {
-  @Input() data:[string, number][];
+  @Input() title: string;
+  @Input() type: string;
+  @Input() data: [string, number][];
+  @Input() selectionTitle: string;
+  @Input() selectionValue: string;
+  @Output() onSummarySelected = new EventEmitter<[string, string]>();
 
   private options = {
     chart: {
@@ -167,9 +188,9 @@ export class SummaryChartComponent implements OnInit, OnChanges {
     },
     series: []
   };
-  private chart:HighchartsChartObject;
-  private seriesOptions:any = {data: [], dataLabels: {align: 'left'}};
-  private seriesOptions2:any = {data: [], dataLabels: {align: 'right'}};
+  private chart: ChartObject;
+  private seriesOptions: any = {data: [], dataLabels: {align: 'left'}};
+  private seriesOptions2: any = {data: [], dataLabels: {align: 'right'}};
 
   constructor() {
   }
@@ -194,15 +215,41 @@ export class SummaryChartComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(changes:SimpleChanges) {
-    console.log(changes);
+  ngOnChanges(changes: SimpleChanges) {
+    if (!this.chart) {
+      return;
+    }
+    if (!changes['selectionValue']) {
+      return;
+    }
+    const newTitle = changes['selectionTitle'] ? changes['selectionTitle'].currentValue : this.title;
+    const newValue = newTitle === this.title ? changes['selectionValue'].currentValue : null;
+    const points:PointObject[] = (<any>this.chart.series[1]).points;
+    const pt = points.find(p=>p.name === newValue);
+    this.select(pt);
   }
 
   private saveInstance(chartInstance) {
     this.chart = chartInstance;
     this.chart.addSeries(this.seriesOptions2, false);
     this.chart.addSeries(this.seriesOptions, false);
+    this.chart.setTitle({text: `${this.title} ${this.type}`}, false);
     this.chart.redraw();
+  }
+
+  private select(pt: PointObject): void {
+    const points:PointObject[] = (<any>this.chart.series[1]).points;
+    const pt2 = points.find(p => (<any>p).color === 'lightgreen');
+    if (pt2 === pt) {
+      return;
+    }
+    if (pt2) {
+      pt2.update({color: 'lightblue'}, false);
+    }
+    if ( pt ) {
+      pt.update({color: 'lightgreen'}, false);
+    }
+    this.chart.redraw(false);
   }
 
   private onPointClick(e) {
@@ -210,15 +257,8 @@ export class SummaryChartComponent implements OnInit, OnChanges {
     if (pt.name === 'Other' && pt.index === pt.series.points.length - 1) {
       return;
     }
-    const pt2 = pt.series.points.find(p => p.color === 'lightgreen');
-    if (pt2 === pt) {
-      return;
-    }
-    if (pt2) {
-      pt2.update({color: 'lightblue'}, false);
-    }
-    pt.update({color: 'lightgreen'}, false);
-    this.chart.redraw(false);
+    this.select(pt);
+    this.onSummarySelected.emit([this.title, pt.name]);
   }
 }
 
