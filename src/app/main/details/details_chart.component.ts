@@ -1,7 +1,8 @@
-import { Component, Input, EventEmitter, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { Highcharts } from 'angular2-highcharts';
+import {Component, Input, EventEmitter, Output, OnChanges, SimpleChanges} from '@angular/core';
+import {ChartObject} from 'highcharts';
+import {Highcharts} from 'angular2-highcharts';
 import * as _ from 'lodash';
-import { GenStatRecord } from '../../model/gen-stat-record';
+import {GenStatRecord} from '../../model/gen-stat-record';
 
 Highcharts.setOptions({
   global: {
@@ -10,14 +11,14 @@ Highcharts.setOptions({
 });
 
 class GSRPointRep {
-  constructor(public gsr:GenStatRecord, public y:number) {
+  constructor(public gsr: GenStatRecord, public y: number) {
   }
 
-  get x():number {
+  get x(): number {
     return this.gsr.asofDate;
   }
 
-  get tooltip():string {
+  get tooltip(): string {
     const g = this.gsr;
     return `${g.user} ${g.report} ${g.port} ${g.reqTime.toFixed(2)} sec`;
   }
@@ -29,29 +30,29 @@ class GSRPointRep {
   styleUrls: ['./details_chart.component.css']
 })
 export class DetailsChartComponent implements OnChanges {
-  @Input() records:GenStatRecord[];
-  @Input() isSelected:(GenStatRecord)=>boolean;
+  @Input() records: GenStatRecord[];
+  @Input() isSelected: (GenStatRecord)=>boolean;
   @Output() onZoomChanged = new EventEmitter<[number,number]>();
 
-  private options:any;
-  private chart:HighchartsChartObject;
+  private options: any;
+  private chart: ChartObject;
 
   // all points (invisible, base series for navigator)
-  private data:GSRPointRep[] = [];
-  private minAsofDate:number;
-  private maxAsofDate:number;
+  private data: GSRPointRep[] = [];
+  private minAsofDate: number;
+  private maxAsofDate: number;
 
   // fast, medium, and slow sets - with no selection
-  private dataFast:GSRPointRep[] = [];
-  private dataMed:GSRPointRep[] = [];
-  private dataSlow:GSRPointRep[] = [];
+  private dataFast: GSRPointRep[] = [];
+  private dataMed: GSRPointRep[] = [];
+  private dataSlow: GSRPointRep[] = [];
   // fast, medium, and slow sets - with selection
-  private data1Fast:GSRPointRep[] = [];
-  private data2Fast:GSRPointRep[] = [];
-  private data1Med:GSRPointRep[] = [];
-  private data2Med:GSRPointRep[] = [];
-  private data1Slow:GSRPointRep[] = [];
-  private data2Slow:GSRPointRep[] = [];
+  private data1Fast: GSRPointRep[] = [];
+  private data2Fast: GSRPointRep[] = [];
+  private data1Med: GSRPointRep[] = [];
+  private data2Med: GSRPointRep[] = [];
+  private data1Slow: GSRPointRep[] = [];
+  private data2Slow: GSRPointRep[] = [];
 
   constructor() {
     this.options = this.getChartOptions();
@@ -65,8 +66,8 @@ export class DetailsChartComponent implements OnChanges {
   }
 
   private onAfterSetExtremesX(e) {
-    const min:number = e.context.min <= this.minAsofDate ? null : e.context.min;
-    const max:number = e.context.max >= this.maxAsofDate ? null : e.context.max;
+    const min: number = e.context.min <= this.minAsofDate ? null : e.context.min;
+    const max: number = e.context.max >= this.maxAsofDate ? null : e.context.max;
     this.onZoomChanged.emit([min, max]);
   }
 
@@ -101,7 +102,7 @@ export class DetailsChartComponent implements OnChanges {
     this.chart.redraw();
   }
 
-  ngOnChanges(changes:SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges) {
     if ('records' in changes) {
       if (_.get(changes, 'records.currentValue.length') > 0) {
         this.setSeries();
@@ -114,7 +115,7 @@ export class DetailsChartComponent implements OnChanges {
     }
   }
 
-  private formatDataGroupPoint(begin:number, end:number):string {
+  private formatDataGroupPoint(begin: number, end: number): string {
     let s = '';
     const slice = this.data.slice(begin, end).sort((a, b) => {
       return b.gsr.reqTime - a.gsr.reqTime;
@@ -137,11 +138,11 @@ export class DetailsChartComponent implements OnChanges {
     return {
       valueDecimals: 2,
       pointFormatter: function () {
-        let s:string;
+        let s: string;
         if (this.dataGroup) {
           const begin = this.dataGroup.start;
           const end = begin + this.dataGroup.length;
-          const comp:DetailsChartComponent = <DetailsChartComponent>this.series.chart['details_chart'];
+          const comp: DetailsChartComponent = <DetailsChartComponent>this.series.chart['details_chart'];
           s = comp.formatDataGroupPoint(begin, end);
         } else if (this.gsr) {
           const p = <GSRPointRep>this.options;
@@ -156,6 +157,9 @@ export class DetailsChartComponent implements OnChanges {
 
   private getChartOptions() {
     return {
+      credits: {
+        enabled: false
+      },
       navigator: {
         baseSeries: 'allData'
       },
@@ -210,28 +214,28 @@ export class DetailsChartComponent implements OnChanges {
     };
   }
 
-  private fast(p:GSRPointRep):boolean {
+  private fast(p: GSRPointRep): boolean {
     return p.gsr.reqTime < 1.0;
   }
 
-  private slow(p:GSRPointRep):boolean {
+  private slow(p: GSRPointRep): boolean {
     return p.gsr.reqTime > 60.0;
   }
 
-  private medium(p:GSRPointRep):boolean {
+  private medium(p: GSRPointRep): boolean {
     return !this.fast(p) && !this.slow(p);
   }
 
-  private updateData():void {
+  private updateData(): void {
     // construct array of gsrs and end times, sort
-    let x:(GenStatRecord|number)[] = [];
+    let x: (GenStatRecord|number)[] = [];
     this.records.forEach((gsr)=> {
       x.push(gsr);
       x.push(gsr.asofDate + gsr.reqTime * 1000);
     });
     x.sort((a, b)=> {
-      const aa:number = a instanceof GenStatRecord ? a.asofDate : a;
-      const bb:number = b instanceof GenStatRecord ? b.asofDate : b;
+      const aa: number = a instanceof GenStatRecord ? a.asofDate : <number>a;
+      const bb: number = b instanceof GenStatRecord ? b.asofDate : <number>b;
       return aa - bb;
     });
     // build data
