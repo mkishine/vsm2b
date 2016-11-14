@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { GenStatDataService } from './../utilities/gen-stat-data.service';
-import { GenStatRecord } from './../model/gen-stat-record';
+import {Component, OnInit} from '@angular/core';
+import {GenStatDataService} from './../utilities/gen-stat-data.service';
+import {GenStatRecord} from './../model/gen-stat-record';
 import * as _ from 'lodash';
 
 @Component({
@@ -9,32 +9,32 @@ import * as _ from 'lodash';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  private originalRecords:GenStatRecord[];
-  private records:GenStatRecord[] = [];
+  private originalRecords: GenStatRecord[];
+  private records: GenStatRecord[] = [];
 
-  private clientCountSummary:[string, number][];
-  private appServerCountSummary:[string, number][];
-  private reportTypeCountSummary:[string, number][];
-  private reportCountSummary:[string, number][];
-  private portCountSummary:[string, number][];
-  private userCountSummary:[string, number][];
+  private clientCountSummary: [string, number][];
+  private appServerCountSummary: [string, number][];
+  private reportTypeCountSummary: [string, number][];
+  private reportCountSummary: [string, number][];
+  private portCountSummary: [string, number][];
+  private userCountSummary: [string, number][];
 
-  private clientTimeSummary:[string, number][];
-  private appServerTimeSummary:[string, number][];
-  private reportTypeTimeSummary:[string, number][];
-  private reportTimeSummary:[string, number][];
-  private portTimeSummary:[string, number][];
-  private userTimeSummary:[string, number][];
+  private clientTimeSummary: [string, number][];
+  private appServerTimeSummary: [string, number][];
+  private reportTypeTimeSummary: [string, number][];
+  private reportTimeSummary: [string, number][];
+  private portTimeSummary: [string, number][];
+  private userTimeSummary: [string, number][];
 
   private selectionTitle = '';
   private selectionValue = '';
   private isSelected = this.noSelection;
 
-  constructor(private genStatDataService:GenStatDataService) {
+  constructor(private genStatDataService: GenStatDataService) {
   }
 
-  ngOnInit():void {
-    this.genStatDataService.getRecords().then((data:GenStatRecord[]) => {
+  ngOnInit(): void {
+    this.genStatDataService.getRecords().then((data: GenStatRecord[]) => {
       this.records = this.originalRecords = data;
       this.updateSummaries();
     });
@@ -44,9 +44,9 @@ export class AppComponent implements OnInit {
     return false;
   };
 
-  private count(data:GenStatRecord[],
-                keyGen:(GenStatRecord)=>string,
-                accGen:(GenStatRecord)=>number):[string, number][] {
+  private count(data: GenStatRecord[],
+                keyGen: (GenStatRecord)=>string,
+                accGen: (GenStatRecord)=>number): [string, number][] {
     return <[string, number][]>_(data.reduce(
       function (acc, r) {
         const key = keyGen(r);
@@ -63,7 +63,7 @@ export class AppComponent implements OnInit {
       .value();
   }
 
-  private updateSummaries():void {
+  private updateSummaries(): void {
     this.clientCountSummary = this.count(this.records, gsr => gsr.client, gsr => 1);
     this.appServerCountSummary = this.count(this.records, gsr => gsr.appServer, gsr => 1);
     this.reportTypeCountSummary = this.count(this.records, gsr => gsr.reportType, gsr => 1);
@@ -79,9 +79,12 @@ export class AppComponent implements OnInit {
   }
 
   // tslint:disable:no-unused-variable
-  private onZoomChanged(range:[number,number]) {
+  private onZoomChanged(range: [number,number]) {
     let min = range[0], max = range[1];
     if (min === null && max === null) {
+      if (this.records === this.originalRecords) {
+        return;
+      }
       this.records = this.originalRecords;
     } else {
       if (!Number.isFinite(min)) {
@@ -90,15 +93,16 @@ export class AppComponent implements OnInit {
       if (!Number.isFinite(max)) {
         max = Number.POSITIVE_INFINITY;
       }
-      this.records = this.originalRecords.filter((gsr:GenStatRecord) => {
+      this.records = this.originalRecords.filter((gsr: GenStatRecord) => {
         const ret = gsr.asofDate >= min && gsr.asofDate <= max;
         return ret;
       });
     }
     this.updateSummaries();
   }
+
   // tslint:disable:no-unused-variable
-  private onSummarySelected(info:[string,string]) {
+  private onSummarySelected(info: [string,string]) {
     const title = info[0];
     const value = info[1];
     if (value === '') {
@@ -109,32 +113,32 @@ export class AppComponent implements OnInit {
     }
     switch (title) {
       case 'Client':
-        this.isSelected = function (gsr:GenStatRecord) {
+        this.isSelected = function (gsr: GenStatRecord) {
           return gsr.client === value;
         };
         break;
       case 'AppServer':
-        this.isSelected = function (gsr:GenStatRecord) {
+        this.isSelected = function (gsr: GenStatRecord) {
           return gsr.appServer === value;
         };
         break;
       case 'ReportType':
-        this.isSelected = function (gsr:GenStatRecord) {
+        this.isSelected = function (gsr: GenStatRecord) {
           return gsr.reportType === value;
         };
         break;
       case 'Report':
-        this.isSelected = function (gsr:GenStatRecord) {
+        this.isSelected = function (gsr: GenStatRecord) {
           return gsr.report === value;
         };
         break;
       case 'Portfolio':
-        this.isSelected = function (gsr:GenStatRecord) {
+        this.isSelected = function (gsr: GenStatRecord) {
           return gsr.port === value;
         };
         break;
       case 'User':
-        this.isSelected = function (gsr:GenStatRecord) {
+        this.isSelected = function (gsr: GenStatRecord) {
           return gsr.user === value;
         };
         break;
